@@ -5,6 +5,7 @@ import com.devsu.clientes.exception.RecursoNoEncontradoException;
 import com.devsu.clientes.messaging.ClienteEventProducer;
 import com.devsu.clientes.model.dto.ClienteRequestDTO;
 import com.devsu.clientes.model.dto.ClienteResponseDTO;
+import com.devsu.clientes.model.dto.ClientePatchDTO;
 import com.devsu.clientes.model.entity.Cliente;
 import com.devsu.clientes.model.mapper.ClienteMapper;
 import com.devsu.clientes.repository.ClienteRepository;
@@ -175,5 +176,132 @@ class ClienteServiceImplTest {
         verify(eventProducer, times(1)).publicarClienteEliminado(
                 argThat(e -> "ELIMINADO".equals(e.getTipoEvento())
                           && "jose123".equals(e.getClienteId())));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  TEST 6: Actualizar cliente completo (PUT) publica evento ACTUALIZADO
+    // ─────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("Debe actualizar cliente completo y publicar evento ACTUALIZADO")
+    void actualizar_DebeActualizarYPublicarEvento() {
+        // ARRANGE
+        when(clienteRepository.findByClienteId("jose123")).thenReturn(Optional.of(clienteEntity));
+        doNothing().when(clienteMapper).updateEntityFromDTO(requestDTO, clienteEntity);
+        when(clienteRepository.save(clienteEntity)).thenReturn(clienteEntity);
+        when(clienteMapper.toDTO(clienteEntity)).thenReturn(responseDTO);
+
+        // ACT
+        ClienteResponseDTO resultado = clienteService.actualizar("jose123", requestDTO);
+
+        // ASSERT
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getClienteId()).isEqualTo("jose123");
+
+        // Verificar que se guardó y se publicó evento ACTUALIZADO
+        verify(clienteRepository, times(1)).save(clienteEntity);
+        verify(eventProducer, times(1)).publicarClienteActualizado(
+                argThat(e -> "ACTUALIZADO".equals(e.getTipoEvento())
+                        && "jose123".equals(e.getClienteId())));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  TEST 7: Actualizar cliente inexistente lanza excepción
+    // ─────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("Debe lanzar excepción al actualizar cliente que no existe")
+    void actualizar_ClienteInexistente_DeberiaLanzarExcepcion() {
+        // ARRANGE
+        when(clienteRepository.findByClienteId("noExiste")).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThatThrownBy(() -> clienteService.actualizar("noExiste", requestDTO))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessageContaining("noExiste");
+
+        // Verificar que no se guardó ni publicó nada
+        verify(clienteRepository, never()).save(any());
+        verify(eventProducer, never()).publicarClienteActualizado(any());
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  TEST 8: PATCH con nombre — publica evento ACTUALIZADO
+    // ─────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("PATCH con nombre modificado debe publicar evento ACTUALIZADO")
+    void actualizarParcial_ConNombre_DebePublicarEvento() {
+        // ARRANGE
+        ClientePatchDTO patch = ClientePatchDTO.builder()
+                .nombre("Jose Lema Modificado")
+                .build();
+
+        Cliente clienteActualizado = new Cliente();
+        clienteActualizado.setId(1L);
+        clienteActualizado.setClienteId("jose123");
+        clienteActualizado.setNombre("Jose Lema Modificado");
+        clienteActualizado.setEstado(true);
+
+        ClienteResponseDTO responseActualizado = ClienteResponseDTO.builder()
+                .id(1L).clienteId("jose123")
+                .nombre("Jose Lema Modificado").estado(true)
+                .build();
+
+        when(clienteRepository.findByClienteId("jose123")).thenReturn(Optional.of(clienteEntity));
+        when(clienteRepository.save(clienteEntity)).thenReturn(clienteActualizado);
+        when(clienteMapper.toDTO(clienteActualizado)).thenReturn(responseActualizado);
+
+        // ACT
+        ClienteResponseDTO resultado = clienteService.actualizarParcial("jose123", patch);
+
+        // ASSERT
+        assertThat(resultado.getNombre()).isEqualTo("Jose Lema Modificado");
+
+        // El nombre cambió → debe publicar evento
+        verify(eventProducer, times(1)).publicarClienteActualizado(
+                argThat(e -> "ACTUALIZADO".equals(e.getTipoEvento())
+                        && "jose123".equals(e.getClienteId())
+                        && "Jose Lema Modificado".equals(e.getNombre())));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  TEST 9: PATCH sin nombre — NO publica evento
+    // ─────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("PATCH sin nombre NO debe publicar evento a RabbitMQ")
+    void actualizarParcial_SinNombre_NoDebePublicarEvento() {
+        // ARRANGE — solo cambia estado, nombre es null
+        ClientePatchDTO patch = ClientePatchDTO.builder()
+                .estado(false)
+                .build();
+
+        when(clienteRepository.findByClienteId("jose123")).thenReturn(Optional.of(clienteEntity));
+        when(clienteRepository.save(clienteEntity)).thenReturn(clienteEntity);
+        when(clienteMapper.toDTO(clienteEntity)).thenReturn(responseDTO);
+
+        // ACT
+        clienteService.actualizarParcial("jose123", patch);
+
+        // ASSERT — nombre no cambió → NO debe publicar evento
+        verify(eventProducer, never()).publicarClienteActualizado(any());
+        // Pero sí debe guardar el cambio de estado
+        verify(clienteRepository, times(1)).save(clienteEntity);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  TEST 10: PATCH cliente inexistente lanza excepción
+    // ─────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("PATCH sobre cliente inexistente debe lanzar excepción")
+    void actualizarParcial_ClienteInexistente_DeberiaLanzarExcepcion() {
+        // ARRANGE
+        ClientePatchDTO patch = ClientePatchDTO.builder().nombre("Nuevo nombre").build();
+        when(clienteRepository.findByClienteId("noExiste")).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThatThrownBy(() -> clienteService.actualizarParcial("noExiste", patch))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessageContaining("noExiste");
+
+        verify(clienteRepository, never()).save(any());
+        verify(eventProducer, never()).publicarClienteActualizado(any());
     }
 }
