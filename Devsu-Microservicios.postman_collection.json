@@ -1,0 +1,301 @@
+{
+  "info": {
+    "name": "devsu - Microservicios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección completa: GET, POST, PUT, PATCH, DELETE para MS-Clientes (8081) y MS-Cuentas (8082)"
+  },
+  "variable": [
+    { "key": "base_clientes", "value": "http://localhost:8081/api" },
+    { "key": "base_cuentas",  "value": "http://localhost:8082/api" }
+  ],
+  "item": [
+    {
+      "name": "MS-Clientes — /clientes",
+      "item": [
+        {
+          "name": "GET — Listar todos los clientes",
+          "request": { "method": "GET", 
+          "url": {
+              "raw": "{{base_clientes}}/clientes?page=0&size=10",
+              "host": ["{{base_clientes}}"],
+              "path": ["clientes"],
+              "query": [
+                { "key": "page",     "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET — Buscar cliente por ID",
+          "request": { "method": "GET", "url": "{{base_clientes}}/clientes/jose123" }
+        },
+        {
+          "name": "POST — Crear Jose Lema",
+          "request": {
+            "method": "POST", "url": "{{base_clientes}}/clientes",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Jose Lema\",\n  \"genero\": \"Masculino\",\n  \"edad\": 30,\n  \"identificacion\": \"0101010101\",\n  \"direccion\": \"Otavalo sn y principal\",\n  \"telefono\": \"098254785\",\n  \"clienteId\": \"jose123\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear Marianela Montalvo",
+          "request": {
+            "method": "POST", "url": "{{base_clientes}}/clientes",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Marianela Montalvo\",\n  \"genero\": \"Femenino\",\n  \"edad\": 28,\n  \"identificacion\": \"0202020202\",\n  \"direccion\": \"Amazonas y NNUU\",\n  \"telefono\": \"097548965\",\n  \"clienteId\": \"marianela456\",\n  \"contrasena\": \"5678\",\n  \"estado\": true\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear Juan Osorio",
+          "request": {
+            "method": "POST", "url": "{{base_clientes}}/clientes",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Juan Osorio\",\n  \"genero\": \"Masculino\",\n  \"edad\": 25,\n  \"identificacion\": \"0303030303\",\n  \"direccion\": \"13 junio y Equinoccial\",\n  \"telefono\": \"098874587\",\n  \"clienteId\": \"juan789\",\n  \"contrasena\": \"1245\",\n  \"estado\": true\n}" }
+          }
+        },
+        {
+          "name": "PUT — Actualizar cliente completo",
+          "request": {
+            "method": "PUT", "url": "{{base_clientes}}/clientes/jose123",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Jose Lema Actualizado\",\n  \"genero\": \"Masculino\",\n  \"edad\": 31,\n  \"identificacion\": \"0101010101\",\n  \"direccion\": \"Nueva direccion 123\",\n  \"telefono\": \"098254785\",\n  \"clienteId\": \"jose123\",\n  \"contrasena\": \"nuevapass\",\n  \"estado\": true\n}" }
+          }
+        },
+        {
+          "name": "PATCH — Desactivar cliente (solo estado)",
+          "request": {
+            "method": "PATCH", "url": "{{base_clientes}}/clientes/jose123",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": false\n}" }
+          }
+        },
+        {
+          "name": "PATCH — Cambiar nombre y direccion solamente",
+          "request": {
+            "method": "PATCH", "url": "{{base_clientes}}/clientes/jose123",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Jose Lema Modificado\",\n  \"direccion\": \"Calle nueva 456\"\n}" }
+          }
+        },
+        {
+          "name": "DELETE — Eliminar cliente",
+          "request": { "method": "DELETE", "url": "{{base_clientes}}/clientes/juan789" }
+        }
+      ]
+    },
+    {
+      "name": "MS-Cuentas — /cuentas",
+      "item": [
+        {
+          "name": "GET — Listar todas las cuentas",
+          "request": { "method": "GET", 
+          "url":{
+              "raw": "{{base_cuentas}}/cuentas?page=0&size=10",
+              "host": ["{{base_cuentas}}"],
+              "path": ["cuentas"],
+              "query": [
+                { "key": "page",     "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET — Buscar cuenta por número",
+          "request": { "method": "GET", "url": "{{base_cuentas}}/cuentas/478758" }
+        },
+        {
+          "name": "POST — Crear cuenta Jose Lema (478758 Ahorro 2000)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/cuentas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoCuenta\": \"Ahorro\",\n  \"saldoInicial\": 2000,\n  \"estado\": true,\n  \"clienteId\": \"jose123\"\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear cuenta Marianela (225487 Corriente 100)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/cuentas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoCuenta\": \"Corriente\",\n  \"saldoInicial\": 100,\n  \"estado\": true,\n  \"clienteId\": \"marianela456\"\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear cuenta Juan (495878 Ahorros 0)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/cuentas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"495878\",\n  \"tipoCuenta\": \"Ahorros\",\n  \"saldoInicial\": 0,\n  \"estado\": true,\n  \"clienteId\": \"juan789\"\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear cuenta Marianela (496825 Ahorros 540)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/cuentas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"496825\",\n  \"tipoCuenta\": \"Ahorros\",\n  \"saldoInicial\": 540,\n  \"estado\": true,\n  \"clienteId\": \"marianela456\"\n}" }
+          }
+        },
+        {
+          "name": "POST — Crear cuenta Jose corriente (585545 Corriente 1000)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/cuentas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"585545\",\n  \"tipoCuenta\": \"Corriente\",\n  \"saldoInicial\": 1000,\n  \"estado\": true,\n  \"clienteId\": \"jose123\"\n}" }
+          }
+        },
+        {
+          "name": "PUT — Actualizar cuenta completa",
+          "request": {
+            "method": "PUT", "url": "{{base_cuentas}}/cuentas/478758",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoCuenta\": \"Corriente\",\n  \"saldoInicial\": 2000,\n  \"estado\": true,\n  \"clienteId\": \"jose123\"\n}" }
+          }
+        },
+        {
+          "name": "PATCH — Desactivar cuenta (solo estado)",
+          "request": {
+            "method": "PATCH", "url": "{{base_cuentas}}/cuentas/478758",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": false\n}" }
+          }
+        },
+        {
+          "name": "PATCH — Cambiar tipo de cuenta solamente",
+          "request": {
+            "method": "PATCH", "url": "{{base_cuentas}}/cuentas/478758",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tipoCuenta\": \"Corriente\"\n}" }
+          }
+        },
+        {
+          "name": "DELETE — Eliminar cuenta",
+          "request": { "method": "DELETE", "url": "{{base_cuentas}}/cuentas/585545" }
+        }
+      ]
+    },
+    {
+      "name": "MS-Cuentas — /movimientos",
+      "item": [
+        {
+          "name": "GET — Listar todos los movimientos",
+          "request": { "method": "GET",
+           "url": {
+              "raw": "{{base_cuentas}}/movimientos?page=0&size=10",
+              "host": ["{{base_cuentas}}"],
+              "path": ["movimientos"],
+              "query": [
+                { "key": "page",     "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+           }
+        },
+        {
+          "name": "GET — Buscar movimiento por ID",
+          "request": { "method": "GET", "url": "{{base_cuentas}}/movimientos/1" }
+        },
+        {
+          "name": "POST — Retiro 575 de cuenta 478758",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/movimientos",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"valor\": -575\n}" }
+          }
+        },
+        {
+          "name": "POST — Deposito 600 en cuenta 225487",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/movimientos",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"valor\": 600\n}" }
+          }
+        },
+        {
+          "name": "POST — Deposito 150 en cuenta 495878",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/movimientos",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"495878\",\n  \"valor\": 150\n}" }
+          }
+        },
+        {
+          "name": "POST — Retiro 540 de cuenta 496825",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/movimientos",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"496825\",\n  \"valor\": -540\n}" }
+          }
+        },
+        {
+          "name": "POST — ERROR F3: Retiro sin saldo (esperado 422)",
+          "request": {
+            "method": "POST", "url": "{{base_cuentas}}/movimientos",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"495878\",\n  \"valor\": -9999\n}" }
+          }
+        },
+        {
+          "name": "PUT — Actualizar movimiento completo (requiere numeroCuenta + valor)",
+          "request": {
+            "method": "PUT", "url": "{{base_cuentas}}/movimientos/1",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"valor\": -300\n}" }
+          }
+        },
+        {
+          "name": "PATCH — Corregir solo el valor del movimiento",
+          "request": {
+            "method": "PATCH", "url": "{{base_cuentas}}/movimientos/1",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"valor\": -200\n}" }
+          }
+        },
+        {
+          "name": "DELETE — Eliminar movimiento (revierte saldo)",
+          "request": { "method": "DELETE", "url": "{{base_cuentas}}/movimientos/1" }
+        }
+      ]
+    },
+    {
+      "name": "MS-Cuentas — /reportes (F4)",
+      "item": [
+        {
+          "name": "GET — Reporte Marianela",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_cuentas}}/reportes?page=0&size=10&fecha=2026-01-01,2026-12-31&clienteId=marianela456",
+              "host": ["{{base_cuentas}}"],
+              "path": ["reportes"],
+              "query": [
+                { "key": "page",     "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "fecha",     "value": "2026-01-01,2026-12-31" },
+                { "key": "clienteId", "value": "jose123" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET — Reporte Jose Lema",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_cuentas}}/reportes?page=0&size=10&fecha=2026-01-01,2026-12-31&clienteId=jose123",
+              "host": ["{{base_cuentas}}"],
+              "path": ["reportes"],
+              "query": [
+                { "key": "page",     "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "fecha",     "value": "2026-01-01,2026-12-31" },
+                { "key": "clienteId", "value": "jose123" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
